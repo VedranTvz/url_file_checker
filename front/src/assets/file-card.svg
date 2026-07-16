@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="800" fill="transparent"/>
+  <defs>
+    <linearGradient id="textGlow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00F18C"/>
+      <stop offset="100%" stop-color="#0FCB4A"/>
+    </linearGradient>
+    <radialGradient id="iconGlow" cx="0.5" cy="0.4" r="0.55">
+      <stop offset="0%" stop-color="#12E97E" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#12E97E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <circle cx="400" cy="310" r="190" fill="url(#iconGlow)"/>
+  <path d="M220 330H500L540 390H580V540C580 586.421 542.421 624 496 624H224C177.579 624 140 586.421 140 540V360C140 330.307 164.307 306 194 306Z" fill="#06110D" stroke="#12E97E" stroke-width="22"/>
+  <path d="M220 330H360L410 390H520V470H220V330Z" fill="#0B2414"/>
+  <path d="M220 330H360L410 390H520" stroke="#12E97E" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M240 390H520" stroke="#12E97E" stroke-width="16" stroke-linecap="round"/>
+  <path d="M240 450H520" stroke="#12E97E" stroke-width="16" stroke-linecap="round"/>
+  <path d="M240 510H440" stroke="#12E97E" stroke-width="16" stroke-linecap="round"/>
+  <rect x="260" y="560" width="280" height="82" rx="20" fill="#0C1F14" stroke="#12E97E" stroke-width="18"/>
+  <rect x="300" y="590" width="200" height="30" rx="12" fill="#12E97E" opacity="0.3"/>
+  <rect x="380" y="585" width="40" height="20" rx="10" fill="#12E97E"/>
+  <text x="400" y="740" text-anchor="middle" fill="url(#textGlow)" font-family="Inter, Arial, sans-serif" font-size="64" font-weight="800" letter-spacing="8">FILE SCANNER</text>
+</svg>

@@ -1,0 +1,36 @@
+services:
+ db_service:
+  image: mysql:8
+  environment:
+   MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+   MYSQL_DATABASE: ${DB_NAME}
+  volumes:
+     - mysql_data:/var/lib/mysql
+     - ./DB/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+  ports:
+   - "3306:3306"
+
+ back_service:
+  build:
+   context: .
+   dockerfile: back/Dockerfile
+  ports:
+   - "3000:3000"
+  env_file:
+   - .env
+  depends_on:
+   - db_service
+
+ front_service:
+   build:
+     context: .
+     dockerfile: front/Dockerfile
+   ports:
+    - "5173:5173"
+   depends_on:
+   - back_service
+
+volumes:
+ mysql_data:
+
+   

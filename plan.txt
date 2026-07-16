@@ -1,0 +1,19 @@
+1. code full project
+2. make 2 dockerfiles (front and back)
+3. make docker compose with DB image in it and two created dockerfiles
+4. create vps on oracle and make initial setup
+5. make simple CI/CD file for testing and deploying app on oracle VPS
+    -steps: SAST (Snyk)
+            DAST (OWASP ZAP)
+            Docker scout (image analysis)
+            build docker images (front and back) and push them to docker registry
+            connect to oracle VPS via SSH
+            make little script in cicd.yaml to update and upgrade vps server and install docker compose with this script
+
+6. try to open project on internet accessing public ip adress of VPS
+7. buy domain on cloudflare
+8. connect domain to oracle vps
+9.configure nginx as reverse proxy (probably through docker) to forward client request to server. Setup securtiy config in nginx
+10. try app
+11. make smo changes to see if everything is automated and working properly.
+             
