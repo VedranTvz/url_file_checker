@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - features
+    pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Build backend image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/file-checker-backend -f back/Dockerfile .
+
+      - name: Build frontend image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/file-checker-frontend -f front/Dockerfile .
+
+      - name: Run static code analysis
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=medium
+
+
+      - name: Checkout code
+        run: docker login -u ${{ secrets.DOCKER_USERNAME}} -p ${{ secrets.DOCKER_PASSWORD}}
+
+      - name: Push backend image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/file-checker-backend
+
+      - name: Push frontend image to Docker Hub
+        run: docker push  ${{ secrets.DOCKER_USERNAME }}/file-checker-frontend
+    
