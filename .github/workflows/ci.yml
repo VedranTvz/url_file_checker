@@ -14,19 +14,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Build backend image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/file-checker-backend -f back/Dockerfile .
-
-      - name: Build frontend image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/file-checker-frontend -f front/Dockerfile .
 
       - name: Run static code analysis
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=medium
+          args: --all-projects --severity-threshold=medium
+      
+      - name: Build backend image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/file-checker-backend -f back/Dockerfile .
+
+      - name: Build frontend image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/file-checker-frontend -f front/Dockerfile .
 
 
       - name: Checkout code
