@@ -1,4 +1,5 @@
 import { useState } from 'react'
+const API_URL=import.meta.env.VITE_API_PROD;
 
 type SignInModalProps = {
   isOpen: boolean
@@ -38,7 +39,7 @@ if (!isOpen) return null;
 
     console.log("Attempting to sign in with email:", email, "and phone number:", phoneNumber);
 
-    const response= await fetch("http://localhost:3000/api/auth/signup", {
+    const response= await fetch(`${API_URL}/api/auth/signup`, {
       method: "POST",
       headers:{
         "Content-Type": "application/json",

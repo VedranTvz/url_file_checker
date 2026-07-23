@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import HistorySidebar, { type HistoryItem } from './HistorySidebar'
+const API_URL=import.meta.env.VITE_API_PROD;
 
 type HistoryPanelHelpers = {
   addHistoryItem: (item: HistoryItem) => Promise<void> | void
@@ -28,7 +29,7 @@ function HistoryPanel({ user, children }: HistoryPanelProps) {
     if (!user) return
 
     try {
-      const response = await fetch('http://localhost:3000/api/history', {
+      const response = await fetch(`${API_URL}/api/history`, {
         method: 'POST',
         credentials: 'include',
         headers: {
