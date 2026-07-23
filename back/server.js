@@ -4,7 +4,7 @@ import express from "express";
 import cors from "cors";
 import routes from "./routes.js";
 import cookieParser from "cookie-parser";
-const FRONT_URL=process.env.FRONT_URL;
+const FRONT_URL=process.env.FRONTEND_URL;
 
 
 
