@@ -4,6 +4,7 @@ import express from "express";
 import cors from "cors";
 import routes from "./routes.js";
 import cookieParser from "cookie-parser";
+const FRONT_URL=process.env.FRONT_URL;
 
 
 
@@ -13,7 +14,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: FRONT_URL,
   credentials: true
 }));
 

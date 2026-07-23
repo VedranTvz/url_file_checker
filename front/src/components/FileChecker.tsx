@@ -1,4 +1,5 @@
 import { useState, type ChangeEvent, type DragEvent } from 'react'
+const API_URL=import.meta.env.VITE_API_PROD;
 
 type ScanSummary = {
   verdict: string
@@ -52,7 +53,7 @@ function FileChecker({ onAnalysisComplete }: FileCheckerProps) {
     setLoading(true)
 
     try {
-      const response = await fetch("http://localhost:3000/api/file/hash", {
+      const response = await fetch(`${API_URL}/api/file/hash`, {
         method: "POST",
         body: formData,
       })

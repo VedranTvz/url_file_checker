@@ -7,6 +7,7 @@ import LogInModal from './components/LoginModal'
 import ProfileButton from './components/ProfileButton'
 import SignInModal from './components/SignInModal'
 import URLChecker from './components/URLChecker'
+const API_URL=import.meta.env.VITE_API_PROD
 
 type UserProfile = {
   email: string
@@ -58,7 +59,7 @@ function App() {
 
   const clearUser = async () => {
     try {
-      await fetch('http://localhost:3000/api/auth/logout', {
+      await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include',
       })

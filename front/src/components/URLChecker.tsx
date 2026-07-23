@@ -1,4 +1,5 @@
 import { useState, type ChangeEvent } from 'react'
+const API_URL=import.meta.env.VITE_API_PROD;
 
 type ScanSummary = {
   verdict: string
@@ -33,7 +34,7 @@ function URLChecker({ onAnalysisComplete }: URLCheckerProps) {
     setLoading(true)
 
     try {
-      const response = await fetch("http://localhost:3000/api/check/url", {
+      const response = await fetch(`${API_URL}/api/check/url`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
