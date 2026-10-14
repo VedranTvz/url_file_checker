@@ -13,19 +13,25 @@ jobs:
     steps:
       - name: Start app
         run: |
-          docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/file-checker-backend \
-          -e VIRUSTOTAL_API_KEY="${{ secrets.VIRUSTOTAL_API_KEY }}" \
-          -e DB_HOST="${{ secrets.DB_HOST }}" \
-          -e DB_PORT=3306 \
-          -e DB_USER="${{ secrets.DB_USER }}" \
-          -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
-          -e DB_NAME=file_checker \
-          -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-          -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-          
-          docker run -d -p 5173:5173 ${{ secrets.DOCKER_USERNAME }}/file-checker-frontend
+          docker run -d --name backend -p 3000:3000 \
+            -e PORT=3000 \
+            -e VIRUSTOTAL_API_KEY="${{ secrets.VIRUSTOTAL_API_KEY }}" \
+            -e DB_HOST="${{ secrets.DB_HOST }}" \
+            -e DB_PORT=3306 \
+            -e DB_USER="${{ secrets.DB_USER }}" \
+            -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            -e DB_NAME=file_checker \
+            -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+            -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+            -e FRONTEND_URL="${{ secrets.FRONTEND_URL }}" \
+            ${{ secrets.DOCKER_USERNAME }}/file-checker-backend:latest
+
+          docker run -d --name frontend -p 5173:5173 \
+            ${{ secrets.DOCKER_USERNAME }}/file-checker-frontend:latest
+
           sleep 20
           docker ps -a
+          docker logs backend
 
       - name: ZAP scan frontend
         uses: zaproxy/action-baseline@v0.12.0
@@ -51,9 +57,6 @@ jobs:
         with:
           name: zap-reports
           path: |
-            report_html.html
-            report_json.json
-            report_md.md
             frontend.html
             backend.html
           if-no-files-found: warn
