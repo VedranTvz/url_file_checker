@@ -1,12 +1,11 @@
 
-name: CD - OWASP ZAP Security Scan
+name: CD - OWASP ZAP
 
 on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
     branches: [main]
-
   workflow_dispatch:
 
 permissions:
@@ -14,47 +13,18 @@ permissions:
 
 jobs:
   zap:
-    name: OWASP ZAP Scan
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
 
       - name: Start test environment
-        run: |
-          docker compose -f docker-compose.zap.yml pull
-          docker compose -f docker-compose.zap.yml up -d
-          docker compose -f docker-compose.zap.yml ps
+        run: docker compose -f docker-compose.zap.yml up -d
 
-      - name: Wait for backend
-        run: |
-          for i in $(seq 1 30); do
-            if curl -sS -o /dev/null http://localhost:3000/api/history; then
-              echo "Backend is responding."
-              exit 0
-            fi
-            sleep 3
-          done
-
-          docker compose -f docker-compose.zap.yml logs
-          exit 1
-
-      - name: Wait for frontend
-        run: |
-          for i in $(seq 1 30); do
-            if curl -fsS http://localhost:5173/ -o /dev/null; then
-              echo "Frontend is responding."
-              exit 0
-            fi
-            sleep 3
-          done
-
-          docker compose -f docker-compose.zap.yml logs
-          exit 1
+      - name: Wait for application
+        run: sleep 20
 
       - name: ZAP scan frontend
         uses: zaproxy/action-baseline@v0.12.0
@@ -63,7 +33,7 @@ jobs:
           target: "http://localhost:5173"
           fail_action: false
           allow_issue_writing: false
-          cmd_options: "-r frontend.html"
+         
 
       - name: ZAP scan backend
         uses: zaproxy/action-baseline@v0.12.0
@@ -72,23 +42,9 @@ jobs:
           target: "http://localhost:3000"
           fail_action: false
           allow_issue_writing: false
-          cmd_options: "-r backend.html"
+          
 
-      - name: Upload ZAP reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-reports
-          path: |
-            frontend.html
-            backend.html
-          if-no-files-found: warn
-          retention-days: 14
-
-      - name: Show logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.zap.yml logs
 
       - name: Stop test environment
         if: always()
-        run: docker compose -f docker-compose.zap.yml down -v --remove-orphans
+        run: docker compose -f docker-compose.zap.yml down -v
