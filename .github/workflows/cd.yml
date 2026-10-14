@@ -1,37 +1,60 @@
-name: CD
+
+name: CD - OWASP ZAP Security Scan
 
 on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
     branches: [main]
+
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   zap:
+    name: OWASP ZAP Scan
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+
     steps:
-      - name: Start app
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Start test environment
         run: |
-          docker run -d --name backend -p 3000:3000 \
-            -e PORT=3000 \
-            -e VIRUSTOTAL_API_KEY="${{ secrets.VIRUSTOTAL_API_KEY }}" \
-            -e DB_HOST="${{ secrets.DB_HOST }}" \
-            -e DB_PORT=3306 \
-            -e DB_USER="${{ secrets.DB_USER }}" \
-            -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
-            -e DB_NAME=file_checker \
-            -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-            -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-            -e FRONTEND_URL="${{ secrets.FRONTEND_URL }}" \
-            ${{ secrets.DOCKER_USERNAME }}/file-checker-backend:latest
+          docker compose -f docker-compose.zap.yml pull
+          docker compose -f docker-compose.zap.yml up -d
+          docker compose -f docker-compose.zap.yml ps
 
-          docker run -d --name frontend -p 5173:5173 \
-            ${{ secrets.DOCKER_USERNAME }}/file-checker-frontend:latest
+      - name: Wait for backend
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sS -o /dev/null http://localhost:3000/api/history; then
+              echo "Backend is responding."
+              exit 0
+            fi
+            sleep 3
+          done
 
-          sleep 20
-          docker ps -a
-          docker logs backend
+          docker compose -f docker-compose.zap.yml logs
+          exit 1
+
+      - name: Wait for frontend
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:5173/ -o /dev/null; then
+              echo "Frontend is responding."
+              exit 0
+            fi
+            sleep 3
+          done
+
+          docker compose -f docker-compose.zap.yml logs
+          exit 1
 
       - name: ZAP scan frontend
         uses: zaproxy/action-baseline@v0.12.0
@@ -51,7 +74,7 @@ jobs:
           allow_issue_writing: false
           cmd_options: "-r backend.html"
 
-      - name: Upload reports
+      - name: Upload ZAP reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -60,3 +83,12 @@ jobs:
             frontend.html
             backend.html
           if-no-files-found: warn
+          retention-days: 14
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.zap.yml logs
+
+      - name: Stop test environment
+        if: always()
+        run: docker compose -f docker-compose.zap.yml down -v --remove-orphans
