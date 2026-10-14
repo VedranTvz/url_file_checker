@@ -17,10 +17,10 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "express": "^4.22.2",
+    "express": "^4.22.3",
     "jsonwebtoken": "^9.0.3",
-    "multer": "^2.2.0",
-    "mysql2": "^3.15.2",
+    "multer": "^2.4.0",
+    "mysql2": "^3.23.1",
     "openai": "^6.45.0",
     "uuid": "^14.0.0"
   },
