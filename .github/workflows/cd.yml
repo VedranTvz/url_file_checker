@@ -14,7 +14,7 @@ jobs:
       - name: Start app
         run: |
           docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/file-checker-backend
-          docker run -d -p 8080:5173 ${{ secrets.DOCKER_USERNAME }}/file-checker-frontend
+          docker run -d -p 5173:5173 ${{ secrets.DOCKER_USERNAME }}/file-checker-frontend
           sleep 20
 
       - name: ZAP scan frontend
