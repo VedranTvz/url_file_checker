@@ -24,6 +24,10 @@
     "openai": "^6.45.0",
     "uuid": "^14.0.0"
   },
+  "overrides": {
+  "proxy-addr": "2.0.8",
+  "qs": "6.16.0"
+  },
   "devDependencies": {
     "nodemon": "^3.0.1"
   }
