@@ -1,0 +1,42 @@
+
+services:
+  db_service:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: zap_root_test
+      MYSQL_DATABASE: file_checker
+      MYSQL_USER: zap_user
+      MYSQL_PASSWORD: zap_password
+    volumes:
+      - ./DB/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pzap_root_test"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  back_service:
+    image: vedrantvz/file-checker-backend:latest
+    environment:
+      PORT: "3000"
+      DB_HOST: db_service
+      DB_PORT: "3306"
+      DB_USER: zap_user
+      DB_PASSWORD: zap_password
+      DB_NAME: file_checker
+      JWT_SECRET: zap-test-secret-change-me
+      VIRUSTOTAL_API_KEY: unused-test-key
+      OPENAI_API_KEY: unused-test-key
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - "3000:3000"
+    depends_on:
+      db_service:
+        condition: service_healthy
+
+  front_service:
+    image: vedrantvz/file-checker-frontend:latest
+    ports:
+      - "5173:5173"
+    depends_on:
+      - back_service
