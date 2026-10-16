@@ -31,6 +31,7 @@ jobs:
         continue-on-error: false
         with:
           target: "http://localhost:5173"
+          artifact_name: "zap_front"
           fail_action: false
           allow_issue_writing: false
          
@@ -40,6 +41,7 @@ jobs:
         continue-on-error: false
         with:
           target: "http://localhost:3000"
+          artifact_name: "zap_back"
           fail_action: false
           allow_issue_writing: false
           
